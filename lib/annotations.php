@@ -76,8 +76,16 @@
 			$annotations = array();
 			foreach($data as $class => $parameters) {
 				if(!Addendum::ignores($class)) {
+					switch ($class) {
+						case 'Annotation':
+						case 'Target':
+							$class_name = $class;
+							break;
+						default:
+							$class_name = $class . 'Annotation';
+					}
 					foreach($parameters as $params) {
-						$annotationReflection = new ReflectionClass($class);
+						$annotationReflection = new ReflectionClass($class_name);
 						$annotations[$class][] = $annotationReflection->newInstance($params, $targetReflection);
 					}
 				}
