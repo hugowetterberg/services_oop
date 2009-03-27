@@ -4,13 +4,16 @@
 function services_oop_autoload_info() {
   return array(
     'ServicesOop' => array(
-      'file' => 'ServicesOop.inc',
+      'file' => 'includes/ServicesOop.inc',
+    ),
+    'RelationshipAnnotation' => array(
+      'file' => 'includes/ServicesOop.inc',
     ),
     'AccessAnnotation' => array(
-      'file' => 'ServicesOop.inc',
+      'file' => 'includes/ServicesOop.inc',
     ),
     'ModelAnnotation' => array(
-      'file' => 'ServicesOop.inc',
+      'file' => 'includes/ServicesOop.inc',
     ),
     'ReflectionAnnotatedClass' => array(
       'file' => 'lib/annotations.php',

@@ -2,6 +2,14 @@
 // $Id$
 
 /**
+ * @Target("class")
+ */
+class RelationshipAnnotation extends Annotation {
+  public $name;
+  public $controller;
+}
+
+/**
  * @Target("method")
  */
 class AccessAnnotation extends Annotation {
@@ -18,11 +26,27 @@ class ModelAnnotation extends Annotation {
   public $implementation;
 }
 
-class Services {
+class ServicesOop {
   public static function definitionFromClass($class_name) {
     $def = array();
 
     $class = new ReflectionAnnotatedClass($class_name);
+
+    // Add relationship controllers
+    $annotations = $class->getAllAnnotations();
+    foreach ($annotations as $a) {
+      $type = get_class($a);
+      switch ($type) {
+        case 'RelationshipAnnotation':
+          if ($class->hasMethod($a->controller)) {
+            $method = $class->getMethod($a->controller);
+            $rdef = self::definitionFromMethod($method);
+            array_shift($rdef['#args']); // Remove the resource id argument
+            $def['#relationships'][$a->name] = $rdef;
+          }
+        break;
+      }
+    }
 
     $methods = array(
       'retrieve' => array(),
@@ -31,11 +55,12 @@ class Services {
       'delete' => array(),
       'index' => array(),
     );
+    // Add crud controllers
     foreach ($methods as $name => $params) {
       if ($class->hasMethod($name)) {
         $method = $class->getMethod($name);
         $mdef = self::definitionFromMethod($method);
-        $mdef['#callback'] = $class_name . ':' . $name;
+        $mdef['#callback'] = $class_name . '::' . $name;
         $def['#' . $name] = $mdef;
       }
     }
@@ -46,7 +71,7 @@ class Services {
   private static function definitionFromMethod($method) {
     $def = array();
     $doc = $method->getDocComment();
-    $annotations = $method->getAnnotations();
+    $annotations = $method->getAllAnnotations();
 
     foreach ($annotations as $a) {
       $type = get_class($a);
