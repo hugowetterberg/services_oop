@@ -12,5 +12,11 @@ function services_oop_autoload_info() {
     'ModelAnnotation' => array(
       'file' => 'ServicesOop.inc',
     ),
+    'ReflectionAnnotatedClass' => array(
+      'file' => 'lib/annotations.php',
+    ),
+    'Annotation' => array(
+      'file' => 'lib/annotations.php',
+    ),
   );
 }
