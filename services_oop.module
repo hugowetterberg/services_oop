@@ -1,0 +1,16 @@
+<?php
+// $Id$
+
+function services_oop_autoload_info() {
+  return array(
+    'ServicesOop' => array(
+      'file' => 'ServicesOop.inc',
+    ),
+    'AccessAnnotation' => array(
+      'file' => 'ServicesOop.inc',
+    ),
+    'ModelAnnotation' => array(
+      'file' => 'ServicesOop.inc',
+    ),
+  );
+}
