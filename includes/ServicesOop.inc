@@ -55,6 +55,7 @@ class ServicesOop {
       'delete' => array(),
       'index' => array(),
     );
+
     // Add crud controllers
     foreach ($methods as $name => $params) {
       if ($class->hasMethod($name)) {
@@ -89,10 +90,9 @@ class ServicesOop {
       }
     }
 
-    // Create a argument array
-    $num_req = $method->getNumberOfRequiredParameters();
+    // Get doc info for arguments
     $matches = array();
-    $args = array();
+    $argdoc = array();
     if (preg_match_all('/\@param ([a-z]+) \$([a-z]+) (\[.*\])/', $doc, $matches)) {
       for ($i = 0; $i<count($matches[1]); $i++) {
         $source = json_decode($matches[3][$i]);
@@ -103,13 +103,24 @@ class ServicesOop {
           $source = array($source[0] => $source[1]);
         }
 
-        $args[] = array(
-          '#name' => $matches[2][$i],
+        $argdoc[$matches[2][$i]] = array(
           '#type' => $matches[1][$i],
           '#source' => $source,
-          '#optional' => $i >= $num_req,
         );
       }
+    }
+
+    // Construct the arg array
+    $args = array();
+    foreach ($method->getParameters() as $arginfo) {
+      $doc = $argdoc[$arginfo->getName()];
+      $arg = array_merge($doc, array(
+        '#optional' => $arginfo->isOptional(),
+      ));
+      if ($arg['#optional']) {
+        $arg['#default value'] = $arginfo->isDefaultValueAvailable() ? $arginfo->getDefaultValue() : NULL;
+      }
+      $args[] = $arg;
     }
     $def['#args'] = $args;
 
