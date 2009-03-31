@@ -48,21 +48,22 @@ class ServicesOop {
       }
     }
 
+    // The crud methods together with their default authorization levels
     $methods = array(
-      'retrieve' => array(),
-      'create' => array(),
-      'update' => array(),
-      'delete' => array(),
-      'index' => array(),
+      'retrieve' => array('#authorization level' => 'read'),
+      'create' => array('#authorization level' => 'create'),
+      'update' => array('#authorization level' => 'update'),
+      'delete' => array('#authorization level' => 'delete'),
+      'index' => array('#authorization level' => 'read'),
     );
 
     // Add crud controllers
-    foreach ($methods as $name => $params) {
+    foreach ($methods as $name => $base) {
       if ($class->hasMethod($name)) {
         $method = $class->getMethod($name);
         $mdef = self::definitionFromMethod($method);
         $mdef['#callback'] = $class_name . '::' . $name;
-        $def['#' . $name] = $mdef;
+        $def['#' . $name] = array_merge($base, $mdef);
       }
     }
 
