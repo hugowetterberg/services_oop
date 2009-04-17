@@ -10,6 +10,24 @@ class RelationshipAnnotation extends Annotation {
 }
 
 /**
+ * @Target("class")
+ */
+class ActionAnnotation extends RelationshipAnnotation {}
+
+/**
+ * @Target("class")
+ */
+class TargetedActionAnnotation extends RelationshipAnnotation {}
+
+/**
+ * @Target("method")
+ */
+class RESTRequestParserAnnotation extends Annotation {
+  public $mime;
+  public $parser;
+}
+
+/**
  * @Target("method")
  */
 class AccessAnnotation extends Annotation {
@@ -41,8 +59,26 @@ class ServicesOop {
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
             $rdef = self::definitionFromMethod($method);
+            $rdef['#callback'] = $class_name . '::' . $a->controller;
             array_shift($rdef['#args']); // Remove the resource id argument
             $def['#relationships'][$a->name] = $rdef;
+          }
+        break;
+        case 'ActionAnnotation':
+          if ($class->hasMethod($a->controller)) {
+            $method = $class->getMethod($a->controller);
+            $adef = self::definitionFromMethod($method);
+            $adef['#callback'] = $class_name . '::' . $a->controller;
+            $def['#actions'][$a->name] = $adef;
+          }
+        break;
+        case 'TargetedActionAnnotation':
+          if ($class->hasMethod($a->controller)) {
+            $method = $class->getMethod($a->controller);
+            $adef = self::definitionFromMethod($method);
+            $adef['#callback'] = $class_name . '::' . $a->controller;
+            array_shift($adef['#args']); // Remove the resource id argument
+            $def['#targeted actions'][$a->name] = $adef;
           }
         break;
       }
@@ -87,6 +123,9 @@ class ServicesOop {
           $def['#models'][$a->class] = array(
             'class' => $a->implementation,
           );
+        break;
+        case 'RESTRequestParserAnnotation':
+          $def['#rest request parsers'][$a->mime] = $a->parser;
         break;
       }
     }

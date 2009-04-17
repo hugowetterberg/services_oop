@@ -9,6 +9,15 @@ function services_oop_autoload_info() {
     'RelationshipAnnotation' => array(
       'file' => 'includes/ServicesOop.inc',
     ),
+    'ActionAnnotation' => array(
+      'file' => 'includes/ServicesOop.inc',
+    ),
+    'TargetedActionAnnotation' => array(
+      'file' => 'includes/ServicesOop.inc',
+    ),
+    'RESTRequestParserAnnotation' => array(
+      'file' => 'includes/ServicesOop.inc',
+    ),
     'AccessAnnotation' => array(
       'file' => 'includes/ServicesOop.inc',
     ),
