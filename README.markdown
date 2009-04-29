@@ -83,10 +83,6 @@ This is a incomplete example of how a resource could be implemented.
        * @Model(class='ResourceTimeFeedModel', implementation='EventResourceFeedModel')
        */
       public static function index($page=0, $fields=array(), $params=array()) {
-        $builder = new EventIndexQueryBuilder();
-        if ($params['__action']=='describe') {
-          return $builder->describe();
-        }
         // Do your thing here
       }
 
@@ -102,11 +98,6 @@ This is a incomplete example of how a resource could be implemented.
        * @Model(class='ResourceTimeFeedModel', implementation='EventOccasionsFeedModel')
        */
       public static function retrieveOccasions($nid, $page=0) {
-        $event = node_load($nid);
-        $occasions = event_other_occasions($event, $page);
-        foreach ($occasions as &$occasion) {
-          $occasion->uri = services_resource_uri(array('event', $occasion->nid));
-        }
-        return $occasions;
+        // Do your thing here
       }
     }
