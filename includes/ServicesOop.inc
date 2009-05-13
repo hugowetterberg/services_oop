@@ -144,6 +144,7 @@ class ServicesOop {
         }
 
         $argdoc[$matches[2][$i]] = array(
+          '#name' => $matches[2][$i],
           '#type' => $matches[1][$i],
           '#source' => $source,
         );
