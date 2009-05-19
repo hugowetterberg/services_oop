@@ -175,7 +175,6 @@ class ServicesOop {
     }
     $def['#args'] = $args;
     $def['#help'] = $desc->getDescription();
-
     return $def;
   }
 }
@@ -210,8 +209,8 @@ class ServicesOopDescriptionParser {
       }
     }
     else {
-      if (isset($desc[$type])) {
-        $desc = $desc[$type];
+      if (isset($this->desc[$type])) {
+        $desc = $this->desc[$type];
       }
     }
 
