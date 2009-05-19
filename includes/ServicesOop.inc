@@ -60,7 +60,6 @@ class ServicesOop {
             $method = $class->getMethod($a->controller);
             $rdef = self::definitionFromMethod($method);
             $rdef['#callback'] = $class_name . '::' . $a->controller;
-            array_shift($rdef['#args']); // Remove the resource id argument
             $def['#relationships'][$a->name] = $rdef;
           }
         break;
@@ -77,7 +76,6 @@ class ServicesOop {
             $method = $class->getMethod($a->controller);
             $adef = self::definitionFromMethod($method);
             $adef['#callback'] = $class_name . '::' . $a->controller;
-            array_shift($adef['#args']); // Remove the resource id argument
             $def['#targeted actions'][$a->name] = $adef;
           }
         break;
