@@ -109,6 +109,7 @@ class ServicesOop {
   private static function definitionFromMethod($method) {
     $def = array();
     $doc = $method->getDocComment();
+    $desc = new ServicesOopDescriptionParser($doc);
     $annotations = $method->getAllAnnotations();
 
     foreach ($annotations as $a) {
@@ -143,9 +144,18 @@ class ServicesOop {
           $source = array($source[0] => $source[1]);
         }
 
+        $type = $matches[1][$i];
+        switch ($type) {
+          case 'stdClass':
+          case 'object':
+            $type = 'struct';
+            break;
+        }
+
         $argdoc[$matches[2][$i]] = array(
           '#name' => $matches[2][$i],
-          '#type' => $matches[1][$i],
+          '#type' => $type,
+          '#description' => $desc->getDescription('param', $matches[2][$i]),
           '#source' => $source,
         );
       }
@@ -164,7 +174,86 @@ class ServicesOop {
       $args[] = $arg;
     }
     $def['#args'] = $args;
+    $def['#help'] = $desc->getDescription();
 
     return $def;
+  }
+}
+
+class ServicesOopDescriptionParser {
+  private $desc;
+
+  public function __construct($doc) {
+    $this->desc = $this->descriptionsFromDoc($doc);
+  }
+
+  /**
+   * Gets a description. Defaults to returning the description of the comment
+   * target.
+   *
+   * @param string $type
+   *  The type to get the description of. Could be '#target', 'param' or any
+   *  used @tag in the doc comment.
+   * @param string $context
+   *  The context to get the description of. If $type is 'param' this should be
+   *  the parameter name.
+   * @param bool $trimmed_string
+   *  Set to FALSE to get the raw line array. Defaults to TRUE.
+   * @return mixed
+   *  An array containing the description lines, or a trimmed string.
+   */
+  public function getDescription($type='#target', $context=NULL, $trimmed_string=TRUE) {
+    $desc = array();
+    if ($context) {
+      if (isset($this->desc[$type][$context])) {
+        $desc = $this->desc[$type][$context];
+      }
+    }
+    else {
+      if (isset($desc[$type])) {
+        $desc = $desc[$type];
+      }
+    }
+
+    if ($trimmed_string) {
+      return trim(join($desc, "\n"));
+    }
+    return $desc;
+  }
+
+  /**
+   * Constructs an array with the main description and the description of
+   * any @... that exists in the doc-comment.
+   *
+   * @param string $doc
+   *  The raw doc-comment from the reflected method
+   * @return array
+   *  A associative array containing all descriptions as arrays of lines. The
+   *  main description is in ['#target']. Descriptions of parameters are in
+   *  ['param']['param_name'].
+   */
+  private function descriptionsFromDoc($doc) {
+    $desc = array();
+    $doc = preg_replace('/^\s*(\/\*\*)|(\*\/)|\*/', '', $doc);
+    $lines = split("\n", $doc);
+    $state = '#target';
+    $context = NULL;
+    foreach ($lines as $line) {
+      $line = trim($line);
+      $state_matches = array();
+      if (preg_match('/^@([a-zA-Z]+)(\s+[a-z]+)?(\s+\$([a-z_]+))?/', $line, $state_matches)) {
+        $state = $state_matches[1];
+        $context = empty($state_matches[4]) ? NULL : $state_matches[4];
+        continue;
+      }
+
+      if ($context) {
+        $desc[$state][$context][] = $line;
+      }
+      else {
+        $desc[$state][] = $line;
+      }
+    }
+    return $desc;
   }
 }
