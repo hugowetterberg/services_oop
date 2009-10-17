@@ -42,6 +42,8 @@ class AccessAnnotation extends Annotation {
 class ModelAnnotation extends Annotation {
   public $class;
   public $implementation;
+  public $arguments;
+  public $allow_overrides;
 }
 
 class ServicesOop {
@@ -58,7 +60,7 @@ class ServicesOop {
         case 'RelationshipAnnotation':
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
-            $rdef = self::definitionFromMethod($method);
+            $rdef = self::definitionFromMethod($class_name, $method);
             $rdef['#callback'] = $class_name . '::' . $a->controller;
             $def['#relationships'][$a->name] = $rdef;
           }
@@ -66,7 +68,7 @@ class ServicesOop {
         case 'ActionAnnotation':
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
-            $adef = self::definitionFromMethod($method);
+            $adef = self::definitionFromMethod($class_name, $method);
             $adef['#callback'] = $class_name . '::' . $a->controller;
             $def['#actions'][$a->name] = $adef;
           }
@@ -74,7 +76,7 @@ class ServicesOop {
         case 'TargetedActionAnnotation':
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
-            $adef = self::definitionFromMethod($method);
+            $adef = self::definitionFromMethod($class_name, $method);
             $adef['#callback'] = $class_name . '::' . $a->controller;
             $def['#targeted actions'][$a->name] = $adef;
           }
@@ -95,7 +97,7 @@ class ServicesOop {
     foreach ($methods as $name => $base) {
       if ($class->hasMethod($name)) {
         $method = $class->getMethod($name);
-        $mdef = self::definitionFromMethod($method);
+        $mdef = self::definitionFromMethod($class_name, $method);
         $mdef['#callback'] = $class_name . '::' . $name;
         $def['#' . $name] = array_merge($base, $mdef);
       }
@@ -104,7 +106,7 @@ class ServicesOop {
     return $def;
   }
 
-  private static function definitionFromMethod($method) {
+  private static function definitionFromMethod($class_name, $method) {
     $def = array();
     $doc = $method->getDocComment();
     $desc = new ServicesOopDescriptionParser($doc);
@@ -121,6 +123,8 @@ class ServicesOop {
         case 'ModelAnnotation':
           $def['#models'][$a->class] = array(
             'class' => $a->implementation,
+            'arguments' => $a->arguments,
+            'allow_overrides' => $a->allow_overrides,
           );
         break;
         case 'RESTRequestParserAnnotation':
@@ -163,6 +167,15 @@ class ServicesOop {
     $args = array();
     foreach ($method->getParameters() as $arginfo) {
       $doc = $argdoc[$arginfo->getName()];
+
+      if (!is_array($doc)) {
+        drupal_set_message(t('ServicesOOP: Missing documentation for the parameter "$!name" in !class::!method', array(
+          '!name' => $arginfo->getName(),
+          '!class' => $class_name,
+          '!method' => $method->getName(),
+        )), 'error');
+      }
+
       $arg = array_merge($doc, array(
         '#optional' => $arginfo->isOptional(),
       ));
