@@ -54,6 +54,7 @@ class ServicesOop {
 
     // Add relationship controllers
     $annotations = $class->getAllAnnotations();
+
     foreach ($annotations as $a) {
       $type = get_class($a);
       switch ($type) {
@@ -84,13 +85,13 @@ class ServicesOop {
       }
     }
 
-    // The crud methods together with their default authorization levels
+    // The crud methods
     $methods = array(
-      'retrieve' => array('#authorization level' => 'read'),
-      'create' => array('#authorization level' => 'create'),
-      'update' => array('#authorization level' => 'update'),
-      'delete' => array('#authorization level' => 'delete'),
-      'index' => array('#authorization level' => 'read'),
+      'retrieve' => array(),
+      'create' => array(),
+      'update' => array(),
+      'delete' => array(),
+      'index' => array(),
     );
 
     // Add crud controllers
