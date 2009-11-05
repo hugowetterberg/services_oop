@@ -62,24 +62,24 @@ class ServicesOop {
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
             $rdef = self::definitionFromMethod($class_name, $method);
-            $rdef['#callback'] = $class_name . '::' . $a->controller;
-            $def['#relationships'][$a->name] = $rdef;
+            $rdef['callback'] = $class_name . '::' . $a->controller;
+            $def['relationships'][$a->name] = $rdef;
           }
         break;
         case 'ActionAnnotation':
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
             $adef = self::definitionFromMethod($class_name, $method);
-            $adef['#callback'] = $class_name . '::' . $a->controller;
-            $def['#actions'][$a->name] = $adef;
+            $adef['callback'] = $class_name . '::' . $a->controller;
+            $def['actions'][$a->name] = $adef;
           }
         break;
         case 'TargetedActionAnnotation':
           if ($class->hasMethod($a->controller)) {
             $method = $class->getMethod($a->controller);
             $adef = self::definitionFromMethod($class_name, $method);
-            $adef['#callback'] = $class_name . '::' . $a->controller;
-            $def['#targeted actions'][$a->name] = $adef;
+            $adef['callback'] = $class_name . '::' . $a->controller;
+            $def['targeted actions'][$a->name] = $adef;
           }
         break;
       }
@@ -99,8 +99,8 @@ class ServicesOop {
       if ($class->hasMethod($name)) {
         $method = $class->getMethod($name);
         $mdef = self::definitionFromMethod($class_name, $method);
-        $mdef['#callback'] = $class_name . '::' . $name;
-        $def['#' . $name] = array_merge($base, $mdef);
+        $mdef['callback'] = $class_name . '::' . $name;
+        $def[$name] = array_merge($base, $mdef);
       }
     }
 
@@ -117,19 +117,19 @@ class ServicesOop {
       $type = get_class($a);
       switch ($type) {
         case 'AccessAnnotation':
-          $def['#access callback'] = $a->callback;
-          $def['#access arguments'] = $a->args;
-          $def['#access arguments append'] = $a->appendArgs;
+          $def['access callback'] = $a->callback;
+          $def['access arguments'] = $a->args;
+          $def['access arguments append'] = $a->appendArgs;
         break;
         case 'ModelAnnotation':
-          $def['#models'][$a->class] = array(
+          $def['models'][$a->class] = array(
             'class' => $a->implementation,
             'arguments' => $a->arguments,
             'allow_overrides' => $a->allow_overrides,
           );
         break;
         case 'RESTRequestParserAnnotation':
-          $def['#rest request parsers'][$a->mime] = $a->parser;
+          $def['rest request parsers'][$a->mime] = $a->parser;
         break;
       }
     }
@@ -156,10 +156,10 @@ class ServicesOop {
         }
 
         $argdoc[$matches[2][$i]] = array(
-          '#name' => $matches[2][$i],
-          '#type' => $type,
-          '#description' => $desc->getDescription('param', $matches[2][$i]),
-          '#source' => $source,
+          'name' => $matches[2][$i],
+          'type' => $type,
+          'description' => $desc->getDescription('param', $matches[2][$i]),
+          'source' => $source,
         );
       }
     }
@@ -178,15 +178,15 @@ class ServicesOop {
       }
 
       $arg = array_merge($doc, array(
-        '#optional' => $arginfo->isOptional(),
+        'optional' => $arginfo->isOptional(),
       ));
-      if ($arg['#optional']) {
-        $arg['#default value'] = $arginfo->isDefaultValueAvailable() ? $arginfo->getDefaultValue() : NULL;
+      if ($arg['optional']) {
+        $arg['default value'] = $arginfo->isDefaultValueAvailable() ? $arginfo->getDefaultValue() : NULL;
       }
       $args[] = $arg;
     }
-    $def['#args'] = $args;
-    $def['#help'] = $desc->getDescription();
+    $def['args'] = $args;
+    $def['help'] = $desc->getDescription();
     return $def;
   }
 }
@@ -203,7 +203,7 @@ class ServicesOopDescriptionParser {
    * target.
    *
    * @param string $type
-   *  The type to get the description of. Could be '#target', 'param' or any
+   *  The type to get the description of. Could be 'target', 'param' or any
    *  used @tag in the doc comment.
    * @param string $context
    *  The context to get the description of. If $type is 'param' this should be
@@ -213,7 +213,7 @@ class ServicesOopDescriptionParser {
    * @return mixed
    *  An array containing the description lines, or a trimmed string.
    */
-  public function getDescription($type='#target', $context=NULL, $trimmed_string=TRUE) {
+  public function getDescription($type='target', $context=NULL, $trimmed_string=TRUE) {
     $desc = array();
     if ($context) {
       if (isset($this->desc[$type][$context])) {
@@ -240,14 +240,14 @@ class ServicesOopDescriptionParser {
    *  The raw doc-comment from the reflected method
    * @return array
    *  A associative array containing all descriptions as arrays of lines. The
-   *  main description is in ['#target']. Descriptions of parameters are in
+   *  main description is in ['target']. Descriptions of parameters are in
    *  ['param']['param_name'].
    */
   private function descriptionsFromDoc($doc) {
     $desc = array();
     $doc = preg_replace('/^\s*(\/\*\*)|(\*\/)|\*/', '', $doc);
     $lines = split("\n", $doc);
-    $state = '#target';
+    $state = 'target';
     $context = NULL;
     foreach ($lines as $line) {
       $line = trim($line);
