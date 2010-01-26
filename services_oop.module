@@ -1,0 +1,18 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_autoload_info().
+ */
+function services_oop_autoload_info() {
+  module_load_include('inc', 'services_oop');
+  return _services_oop_autoload_info();
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function services_oop_enable() {
+  // Flush the autoload caches so that our classes are registered
+  autoload_flush_caches();
+}
