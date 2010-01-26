@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $Id: ServicesOop.inc,v 1.1 2010/01/26 08:36:20 hugowetterberg Exp $
 
 /**
  * @Target("class")

@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $Id: services_oop.inc,v 1.1 2010/01/26 08:36:20 hugowetterberg Exp $
 
 function _services_oop_autoload_info() {
   return array(

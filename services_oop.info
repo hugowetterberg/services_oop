@@ -1,4 +1,4 @@
-; $Id$
+; $Id: services_oop.info,v 1.1 2010/01/26 08:36:20 hugowetterberg Exp $
 name = Services OOP
 description = Utility functions for working with services in a more OOP-friendly manner
 package = Services
