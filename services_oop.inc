@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 function _services_oop_autoload_info() {
   return array(

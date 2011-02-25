@@ -1,4 +1,3 @@
-; $Id$
 name = Services OOP
 description = Utility functions for working with services in a more OOP-friendly manner
 package = Services
