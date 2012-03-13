@@ -1,6 +1,9 @@
 name = Services OOP
 description = Utility functions for working with services in a more OOP-friendly manner
 package = Services
-dependencies[] = autoload
-core = "6.x"
+
+files[] = includes/ServicesOop.inc
+files[] = lib/annotations.php
+
+core = "7.x"
 php = "5.2"

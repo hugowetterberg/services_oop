@@ -78,7 +78,7 @@ class ServicesOop {
             $method = $class->getMethod($a->controller);
             $adef = self::definitionFromMethod($class_name, $method);
             $adef['callback'] = $class_name . '::' . $a->controller;
-            $def['targeted actions'][$a->name] = $adef;
+            $def['targeted_actions'][$a->name] = $adef;
           }
         break;
       }
@@ -245,7 +245,7 @@ class ServicesOopDescriptionParser {
   private function descriptionsFromDoc($doc) {
     $desc = array();
     $doc = preg_replace('/^\s*(\/\*\*)|(\*\/)|\*/', '', $doc);
-    $lines = split("\n", $doc);
+    $lines = explode("\n", $doc);
     $state = 'target';
     $context = NULL;
     foreach ($lines as $line) {
